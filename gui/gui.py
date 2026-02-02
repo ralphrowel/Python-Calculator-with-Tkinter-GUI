@@ -7,19 +7,31 @@ window.config(background="#424b59")
 
 icon = PhotoImage(file="gui/images/calculatoricon.png")
 window.iconphoto(True, icon)
-
+secret = PhotoImage(file='gui/images/download.png')
 
 outputint = " "
 
+def meme():
+    memewindow = Toplevel()
+    memewindow.title("Secret Meme")
+
+    label = Label(memewindow, image=secret)
+    label.image = secret
+    label.pack()
 
 def buttonclicked(char):
     current = outputlabel['text']
+    if current == "" and char in "+-x÷":
+        return
     outputlabel.config(text=current + str(char))
 
 def buttontotalclicked():
     expr = outputlabel['text'].replace('x','*').replace('÷','/')
-    result = calculate(expr)
-    outputlabel.config(text=result)
+    if expr.strip() == "20":
+        meme()
+    else:
+        result = calculate(expr)
+        outputlabel.config(text=result)
 
 def buttondeleteclicked():
     outputlabel.config(text=outputint)
