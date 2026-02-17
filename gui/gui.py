@@ -1,79 +1,90 @@
-import tkinter as tk
-from tkinter import PhotoImage
-from logic.solve import calculate
+from tkinter import *
 from scrt.scrtgui import secretphoto
+from logic.solve import calculate
 
 def start_app():
-
-    window = tk.Tk()
+    window = Tk()
+    # window.geometry("420x420")
     window.title("Ralph Calculator")
     window.config(background="#424b59")
 
     icon = PhotoImage(file="assets/images/calculatoricon.png")
     window.iconphoto(True, icon)
 
-    output_value = ""
+    outputint = " "
 
     def buttonclicked(char):
-        nonlocal output_value
-
-        if output_value == "" and char in "+-x÷":
+        current = outputlabel['text']
+        if current == "" and char in "+-x÷":
             return
-
-        output_value += char
-        outputlabel.config(text=output_value)
+        outputlabel.config(text=current + str(char))
 
     def buttontotalclicked():
-        nonlocal output_value
-
-        expr = output_value.replace('x', '*').replace('÷', '/')
-
+        expr = outputlabel['text'].replace('x','*').replace('÷','/')
         if expr.strip() == "20":
             secretphoto()
-            return
-
-        result = calculate(expr)
-        output_value = str(result)
-        outputlabel.config(text=output_value)
+        else:
+            result = calculate(expr)
+            outputlabel.config(text=result)
 
     def buttondeleteclicked():
-        nonlocal output_value
-        output_value = ""
-        outputlabel.config(text="")
+        outputlabel.config(text=outputint)
 
-    outputlabel = tk.Label(
-        window,
-        text="",
-        font=('Arial', 18),
-        width=20,
-        height=2
-    )
-    outputlabel.pack(pady=10)
+    title = Label(window, text="Created by Ralphrowel!", 
+                  font=('Arial', 10, 'bold'),
+                  fg='white',
+                  bg="#424b59",
+                  relief=RAISED,
+                  bd=2,
+                  padx=2
+                  )
 
-    buttonframe = tk.Frame(window)
-    buttonframe.pack()
+    outputlabel = Label(window, 
+                   text=outputint,
+                   font=('Digital-7', 15),
+                   fg="#699435",
+                   bg="#98d060",
+                   relief=SOLID,
+                   bd=2,
+                   padx=5, pady=5,
+                   width=20, height=2
+                   )
+
+    buttonframe = Frame(window, bg="#424b59")
 
     buttons = [
-        ('1',0,0), ('2',0,1), ('3',0,2), ('÷',0,3),
-        ('4',1,0), ('5',1,1), ('6',1,2), ('x',1,3),
-        ('7',2,0), ('8',2,1), ('9',2,2), ('-',2,3),
-        ('0',3,0), ('c',3,1), ('=',3,2), ('+',3,3),
+        ('1', 0, 0), ('2', 0, 1), ('3', 0, 2), ('÷', 0, 3),
+        ('4', 1, 0), ('5', 1, 1), ('6', 1, 2), ('x', 1, 3),
+        ('7', 2, 0), ('8', 2, 1), ('9', 2, 2), ('-', 2, 3),
+        ('0', 3, 0), ('c', 3, 1), ('=', 3, 2), ('+', 3, 3),
     ]
 
-    for (text,row,col) in buttons:
+    for text, r, c in buttons:
         if text == '=':
             cmd = buttontotalclicked
+            bgc = "#3d89f6"
         elif text == 'c':
             cmd = buttondeleteclicked
+            bgc = "#e85958"
+        elif text in '+-x÷':
+            cmd = lambda t=text: buttonclicked(t)
+            bgc = "#e85958"
         else:
             cmd = lambda t=text: buttonclicked(t)
+            bgc = "#828f9f"
 
-        tk.Button(
-            buttonframe,
-            text=text,
-            width=4,
-            height=2,
-            command=cmd
-        ).grid(row=row, column=col, padx=5, pady=5)
+        Button(buttonframe, text=text, command=cmd,
+               font=('Digital-7', 15, 'bold'),
+               fg="#fffffe",
+               bg=bgc,
+               activebackground="#fffffe",
+               activeforeground="#828f9f",
+               height=1, width=2,
+               padx=9, pady=9
+               ).grid(row=r, column=c, padx=5, pady=5)
+
+    title.pack()
+    outputlabel.pack(padx=5, pady=5)
+    buttonframe.pack(pady=5)
 
     window.mainloop()
